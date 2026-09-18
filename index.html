@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nariza Mea Guarino — Portfolio</title>
+<meta name="description" content="[One sentence describing who you are and what you make.]">
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ DESIGN TOKENS — edit these to restyle the whole site ============ */
+  :root {
+    --paper: #def2fb;        /* main background */
+    --paper-alt: #c6e2f6;    /* tab / sidebar background */
+    --ink: #000000;          /* primary text */
+    --ink-soft: #201d1f;     /* secondary text */
+    --accent: #6d5cb8;       /* primary accent — links, headings */
+    --accent-warm: #0a54f5;  /* secondary accent — binder rings, tags */
+    --rule: #bdcee7;         /* hairline borders */
+    --card: #e8f4fa;         /* card background */
+
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "Poppins", sans-serif;
+    --font-mono: "Roboto Mono", ui-monospace, monospace;
+
+    --spine-width: 220px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  a:focus-visible, button:focus-visible, .tab:focus-visible {
+    outline: 2.5px solid var(--accent-warm);
+    outline-offset: 3px;
+  }
+
+  .skip-link {
+    position: absolute; left: -999px; top: 0;
+    background: var(--ink); color: var(--paper);
+    padding: 0.75rem 1.25rem; z-index: 100;
+    font-family: var(--font-mono); font-size: 0.85rem;
+  }
+  .skip-link:focus { left: 1rem; top: 1rem; }
+
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.1; margin: 0; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  /* ============ LAYOUT: binder spine (left) + content ============ */
+  .layout {
+    display: grid;
+    grid-template-columns: var(--spine-width) 1fr;
+    min-height: 100vh;
+  }
+
+  /* --- Signature element: the binder spine with punched rings + tab index --- */
+  .spine {
+    background: var(--paper-alt);
+    border-right: 1px solid var(--rule);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem 0;
+  }
+
+  .rings {
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    pointer-events: none;
+  }
+  .ring {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--accent-warm);
+  }
+  .spine-id img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 5%;
+  display: block;
+  margin-bottom: 1rem;
+  border: 2px solid var(--accent);
+  }
+  .spine-id {
+    padding: 0 1.5rem 1.5rem 3rem;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 1rem;
+  }
+  .spine-id .name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    display: block;
+  }
+  .spine-id .role {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+  }
+
+  nav.index { padding-left: 3rem; padding-right: 1rem; display: flex; flex-direction: column; gap: 0.25rem; }
+  .tab {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 0.55rem 0.75rem;
+    border-radius: 3px 0 0 3px;
+    display: flex;
+    gap: 0.6rem;
+  }
+  .tab:hover { background: var(--card); }
+  .tab .code { color: var(--accent-warm); }
+
+  .spine-footer {
+    margin-top: auto;
+    padding: 1.5rem 1.5rem 0 3rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+  }
+
+  /* --- Mobile: spine collapses to a top bar --- */
+  @media (max-width: 780px) {
+    .layout { grid-template-columns: 1fr; }
+    .spine {
+      position: static; height: auto; flex-direction: row;
+      align-items: center; padding: 1rem; overflow-x: auto;
+    }
+    .rings { display: none; }
+    .spine-id { border-bottom: none; border-right: 1px solid var(--rule); padding: 0 1rem; margin: 0; flex-shrink: 0; }
+    nav.index { flex-direction: row; padding: 0 0 0 1rem; }
+    .spine-footer { display: none; }
+  }
+
+  main { min-width: 0; }
+
+  section {
+    padding: 5rem 4rem;
+    border-bottom: 1px solid var(--rule);
+    max-width: 900px;
+  }
+  @media (max-width: 780px) { section { padding: 3rem 1.5rem; } }
+
+  /* ============ HERO ============ */
+  .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); }
+  .hero h2 { font-size: clamp(1.2rem, 4vw, 2.4rem) }
+  .hero .tagline {
+    font-size: 1.12rem;
+    color: var(--ink-soft);
+    max-width: 65ch;
+    margin-top: 1rem;
+  }
+  .hero-links {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.91rem;
+  }
+  .hero-links a { color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+  .hero-links a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ============ ABOUT ============ */
+  .about p { max-width: 65ch; color: var(--ink-soft); }
+  .about p + p { margin-top: 1rem; }
+
+  /* ============ SKILLS ============ */
+  .skill-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+  .skill-group h3 { font-size: 1rem; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 0.75rem; }
+  .skill-group ul { list-style: none; padding: 0; margin: 0; color: var(--ink-soft); }
+  .skill-group li { padding: 0.3rem 0; border-bottom: 1px dotted var(--rule); }
+
+  /* ============ PROJECTS ============ */
+  .project-grid { display: grid; gap: 1.75rem; margin-top: 2rem; }
+  .project-card {
+    background: var(--card);
+    border: 2px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.75rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 640px) { .project-card { grid-template-columns: 1fr; } }
+  .project-card img {
+    width: 100%; height: 100%; min-height: 140px;
+    object-fit: cover; border-radius: 8px;
+    border: 2px solid var(--rule);
+  }
+  .project-card h3 { font-size: 1.25rem; margin-bottom: 0.4rem; }
+  .project-card .desc { color: var(--ink-soft); font-size: 0.95rem; }
+  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.85rem 0; }
+  .tag {
+    font-family: var(--font-mono); font-size: 0.8rem;
+    background: var(--paper-alt); color: var(--accent-warm);
+    padding: 0.2rem 0.55rem; border-radius: 3px;
+  }
+  .project-links { font-family: var(--font-mono); font-size: 0.85rem; display: flex; gap: 1.25rem; }
+
+  /* ============ EXPERIENCE / EDUCATION TIMELINE ============ */
+  .timeline-columns {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+  @media (max-width: 640px) { .timeline-columns { grid-template-columns: 1fr; gap: 2.5rem; } }
+  .timeline-column h3.col-title {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+  }
+  .timeline { border-left: 2px solid var(--rule); padding-left: 1.75rem; display: flex; flex-direction: column; gap: 2rem; }
+  .timeline-item { position: relative; }
+  .timeline-item::before {
+    content: ""; position: absolute; left: -2.28rem; top: 0.35rem;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent-warm);
+  }
+  .timeline-item .when { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); }
+  .timeline-item h3 { font-size: 1.1rem; margin-top: 0.25rem; }
+  .timeline-item .where { color: var(--accent); font-size: 0.92rem; margin-bottom: 0.4rem; }
+  .timeline-item p { color: var(--ink-soft); font-size: 0.92rem; max-width: 60ch; }
+
+  /* ============ CONTACT / FOOTER ============ */
+  .contact { border-bottom: none; }
+  .contact p { color: var(--ink-soft); max-width: 60ch; }
+  .contact-methods { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 0.6rem; font-family: var(--font-mono); font-size: 0.95rem; }
+  footer.sign-off { padding: 2rem 4rem 3rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-soft); }
+  @media (max-width: 780px) { footer.sign-off { padding: 1.5rem; } }
+</style>
+</head>
+
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="layout">
+
+  <!-- ============ SPINE / NAVIGATION ============ -->
+  <header class="spine">
+    <div class="rings" aria-hidden="true">
+      <span class="ring"></span><span class="ring"></span><span class="ring"></span>
+      <span class="ring"></span><span class="ring"></span><span class="ring"></span>
+    </div>
+
+    <div class="spine-id">
+      <img src="images/my_image.jpg" alt="My Image">
+      <span class="name">Nariza Mea Guarino</span>
+      <span class="role">Bachelor of Science in Information Technology, 2nd Year</span>
+    </div>
+
+    <nav class="index" aria-label="Section navigation">
+      <a class="tab" href="#about"><span class="code">01</span> About</a>
+      <a class="tab" href="#skills"><span class="code">02</span> Skills</a>
+      <a class="tab" href="#projects"><span class="code">03</span> Projects</a>
+      <a class="tab" href="#experience"><span class="code">04</span> Experience</a>
+      <a class="tab" href="#contact"><span class="code">05</span> Contact</a>
+    </nav>
+
+    <div class="spine-footer">
+      Last updated: August 2026
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero">
+      <span class="eyebrow">Portfolio — Index 00</span>
+      <h1>Nariza Mea Guarino</h1>
+      <h2>Bachelor of Science in Information Technology</h2>
+      <p class="tagline">I am a second-year Bachelor of Science in Information Technology student with an interest in web development, programming, networking, and digital design. I am eager to gain practical experience, apply my technical skills, and continue growing through real-world projects and opportunities.</p>
+      <div class="hero-links">
+        <a href="mailto:narizameag@gmail.com">Email</a>
+        <a href="files/resume.pdf">Resume</a>
+        <a href="https://github.com/nari-hub7">GitHub</a>
+        <a href="https://www.linkedin.com/in/nariza-mea-guarino/">LinkedIn</a>
+      </div>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section id="about">
+      <span class="eyebrow">Index 01</span>
+      <h2>About</h2>
+      <p>I am a second-year Bachelor of Science in Information Technology student interested in how technology can be used to create practical and useful solutions. I enjoy working with programming, web development, and digital design, especially when I can turn an idea into something people can actually use.</p>
+      <p>Currently, I am building my skills through school projects in programming, web development, databases, and user interface design. I am looking forward to gaining more hands-on experience through projects, internships, and opportunities where I can apply what I have learned.</p>
+    </section>
+
+    <!-- ============ SKILLS ============ -->
+    <section id="skills">
+      <span class="eyebrow">Index 02</span>
+      <h2>Skills</h2>
+      <div class="skill-groups">
+
+        <!-- DUPLICATE THIS BLOCK for each skill category -->
+        <div class="skill-group">
+          <h3>Languages</h3>
+          <ul>
+            <li>C++</li>
+            <li>C#</li>
+            <li>SQL</li>
+            <li>HTML & CSS</li>
+            <li>JavaSript</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <h3>Tools</h3>
+          <ul>
+            <li>Visual Studio</li>
+            <li>VS Code</li>
+            <li>SQL Server Management Studio</li>
+          </ul>
+        </div>
+
+        <div class="skill-group">
+          <h3>Other</h3>
+          <ul>
+            <li>Graphic Design</li>
+            <li>Photo Editing</li>
+            <li>BIOS Installation</li>
+            <li>Basic Network Configuration</li>
+          </ul>
+        </div>
+        <!-- END DUPLICATE BLOCK -->
+
+      </div>
+    </section>
+
+    <!-- ============ PROJECTS ============ -->
+    <section id="projects">
+      <span class="eyebrow">Index 03</span>
+      <h2>Projects</h2>
+      <div class="project-grid">
+
+        <!-- DUPLICATE THIS BLOCK for each project -->
+        <article class="project-card">
+          <img src="images/Registration System image.png" alt="Registration System image">
+          <div>
+            <h3>Registration System</h3>
+            <p class="desc">A C++ event registration system developed for an example event "CCS Acquaintance Party". I developed the complete C++ program using 
+              Visual Studio, including the registration process and participant record management.</p>
+            <div class="tags">
+              <span class="tag">C++</span>
+              <span class="tag">File Handling</span>
+            </div>
+            <div class="project-links">
+              <a href="videos/Registration System Demo.mp4">Live demo</a>
+              <a href="https://github.com/nari-hub7/Registration-System">Source</a>
+            </div>
+          </div>
+        </article>
+        <!-- END DUPLICATE BLOCK -->
+
+        <article class="project-card">
+          <img src="images/Pharmacy Inventory System image.jpg" alt="Pharmacy Invertory System">
+          <div>
+            <h3>Pharmacy Inventory System</h3>
+            <p class="desc">A C# pharmacy inventory system integrated with SQL for managing inventory and pharmacy records. I developed the complete 
+              C# application and implemented the SQL database integration using Visual Studio and SQL Management Studio to store and manage records.</p>
+            <div class="tags">
+              <span class="tag">C#</span>
+              <span class="tag">SQL</span>
+            </div>
+            <div class="project-links">
+              <a href="videos/Pharmacy Inventory System Demo.mp4">Live demo</a>
+              <a href="https://github.com/nari-hub7/Pharmacy-Inventory-System">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <img src="images/Tourist Website image.jpg" alt="Tourist Website image">
+          <div>
+            <h3>Tourist Website</h3>
+            <p class="desc">A tourism website developed using HTML, CSS, and JavaScript to promote tourist spots in Eastern Samar. The website helps visitors discover, explore, and learn more 
+              about different destinations, making it easier and more convenient to plan their trip.</p>
+            <div class="tags">
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">JavaScript</span>
+            </div>
+            <div class="project-links">
+              <a href="videos/Tourist Website Demo.mp4">Live demo</a>
+              <a href="https://eastern-samar-tourism.netlify.app">Source</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============ EXPERIENCE / EDUCATION ============ -->
+    <section id="experience">
+      <span class="eyebrow">Index 04</span>
+      <h2>Experience &amp; Education</h2>
+      <div class="timeline-columns">
+
+        <!-- LEFT COLUMN: EXPERIENCE -->
+        <div class="timeline-column">
+          <h3 class="col-title">Experience</h3>
+          <div class="timeline">
+
+            <!-- DUPLICATE THIS BLOCK for each job or internship -->
+           <div class="timeline-item">
+              <span class="when">July 2025 — Present</span>
+              <h3>BSIT Student</h3>
+              <div class="where">ESSU-Main Campus</div>
+              <p>Learing skills through school projects in programming, web development, databases, 
+                and user interface design.</p>
+            </div>
+            <!-- END DUPLICATE BLOCK -->
+
+             <div class="timeline-item">
+              <span class="when">February 10, 2025 — February 21, 2025</span>
+              <h3>Work Immersionist</h3>
+              <div class="where">Don Bosco Training Center, Borongan City</div>
+              <p>During my work immersion at Don Bosco Training Center in Borongan City, 
+                I experienced working in a real workplace by following instructions and 
+                assisting with tasks assigned by the staff. We also practiced tasks related 
+                to our strand, such as Ethernet cable preparation, RJ45 crimping, BIOS and driver 
+                installation, and basic network configuration.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: EDUCATION -->
+        <div class="timeline-column">
+          <h3 class="col-title">Education</h3>
+          <div class="timeline">
+
+            <!-- DUPLICATE THIS BLOCK for each degree or program -->
+            <div class="timeline-item">
+              <span class="when">June 2025 — Present</span>
+              <h3>BS Information Technology</h3>
+              <div class="where">ESSU-Main Campus, Borongan City</div>
+              <p>Programming, web development, databases, and user interface design.</p>
+            </div>
+            <!-- END DUPLICATE BLOCK -->
+
+            <div class="timeline-item">
+              <span class="when">June 2023 — May 2025</span>
+              <h3>CSS, NC2 Holder</h3>
+              <div class="where">Maydolong National High School, Maydolong</div>
+              <p>Ethernet cable preparation, RJ45 crimping, BIOS and driver 
+                installation, and basic network configuration</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="contact" id="contact">
+      <span class="eyebrow">Index 05</span>
+      <h2>Get in touch</h2>
+      <p>I’m open to opportunities where I can learn, grow, and apply my skills in IT 
+        and computer-related projects. Feel free to reach out anytime!</p>
+      <div class="contact-methods">
+        <a href="mailto:narizameag@gmail.com">narizameag@gmail.com</a>
+        <a href="https://github.com/nari-hub7">github.com/nari-hub7</a>
+        <a href="https://www.linkedin.com/in/nariza-mea-guarino/">linkedin.com/in/nariza-mea-guarino</a>
+        <a href="09507034361">09507034361</a>
+      </div>
+    </section>
+
+    <footer class="sign-off">
+      ©2026 Nariza Mea Guarino. All rights reserved.
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>
